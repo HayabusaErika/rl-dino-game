@@ -20,11 +20,12 @@ DY_BUCKETS = 9
 VEL_BUCKETS = 11
 ONGROUND_BUCKETS = 2
 
+M_DIST = WIDTH_BUCKETS * SPEED_BUCKETS * DY_BUCKETS * VEL_BUCKETS * ONGROUND_BUCKETS
 M_WIDTH = SPEED_BUCKETS * DY_BUCKETS * VEL_BUCKETS * ONGROUND_BUCKETS
 M_SPEED = DY_BUCKETS * VEL_BUCKETS * ONGROUND_BUCKETS
 M_DY = VEL_BUCKETS * ONGROUND_BUCKETS
 M_VEL = ONGROUND_BUCKETS
-MAX_STATES = DIST_BUCKETS * WIDTH_BUCKETS * SPEED_BUCKETS * DY_BUCKETS * VEL_BUCKETS * ONGROUND_BUCKETS
+MAX_STATES = DIST_BUCKETS * M_DIST
 
 
 def discretize(observation: list[float]) -> int:
@@ -33,13 +34,9 @@ def discretize(observation: list[float]) -> int:
     w = min(WIDTH_BUCKETS - 1, int(obstacle_width * WIDTH_BUCKETS))
     s = min(SPEED_BUCKETS - 1, int(obstacle_speed * SPEED_BUCKETS))
     y = min(DY_BUCKETS - 1, int(dino_y * DY_BUCKETS))
-    v = max(-5, min(5, int(dino_velocity_y * 6))) + 5
+    v = max(0, min(VEL_BUCKETS - 1, int(dino_velocity_y * 6) + 5))
     g = int(on_ground)
-    return d * M_WIDTH + w * M_SPEED + s * M_SPEED // SPEED_BUCKETS + y * M_DY // DY_BUCKETS + v * M_VEL // VEL_BUCKETS + g
-
-
-def state_key(key: int) -> str:
-    return str(key)
+    return d * M_DIST + w * M_WIDTH + s * M_SPEED + y * M_DY + v * M_VEL + g
 
 
 def train_fast(
