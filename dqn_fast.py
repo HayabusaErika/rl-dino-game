@@ -258,6 +258,7 @@ def train(
 def evaluate(agent: DQNAgent, episodes: int) -> None:
     agent.epsilon = 0.0
     scores = []
+    print(f"Running evaluation ({episodes} episodes)...")
     for episode in range(1, episodes + 1):
         env = DinoEnv(seed=10_000 + episode)
         observation = env.reset()
@@ -266,6 +267,8 @@ def evaluate(agent: DQNAgent, episodes: int) -> None:
             action = agent.select_action(state)
             state, _, _, _ = env.step(action)
         scores.append(env.score)
+        if episode % 10 == 0:
+            print(f"  eval {episode}/{episodes}")
     average = sum(scores) / len(scores)
     print(f"evaluation episodes={episodes} average_score={average:.2f} best_score={max(scores)}")
 
